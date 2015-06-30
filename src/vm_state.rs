@@ -12,12 +12,12 @@
 ///     Otherwise, move to the next instruction.
 /// ] : If the value at the current cell is zero, move to the next instruction.
 ///     Otherwise, move backwards in the instructions to the corresponding [ .
-struct VMState {
+pub struct VMState {
     stack : [u16; 30000],
     p : usize,
 }
 impl VMState {
-    fn new () -> VMState {
+    pub fn new () -> VMState {
         VMState {
             stack : [0; 30000],
             p : 0
@@ -59,45 +59,3 @@ impl VMState {
     }
 }
 
-/// Stores the string representation of the current program as a string slice.
-pub struct ProgOutput {
-    status : Option<String>,
-    std_out: String,
-}
-struct ProgState {
-    program : String,
-    pp : usize,
-}
-impl ProgState {
-    fn new (input: String) -> ProgState {
-        ProgState {
-            program : input,
-            pp : 0,
-        }
-    }
-    fn run (&self, vm: &mut VMState) -> ProgOutput {
-        let mut std_out = "".to_string();
-        let mut output = ProgOutput {
-            status: None,
-            std_out: std_out,
-        };
-        output
-    }
-}
-
-/// A Brainfuck VM consists of the program state and the VM state.
-/// which is exposed thought the BF fn's
-pub struct BF {
-    vms : VMState,
-    prg : ProgState,
-}
-impl BF {
-    pub fn run_with_input (input: &str) -> ProgOutput {
-        let mut bf_prog = BF {
-            vms: VMState::new(),
-            prg: ProgState::new( input.to_string() ),
-        };
-        let output = bf_prog.prg.run(&mut bf_prog.vms);
-        output
-    }
-}

@@ -1,4 +1,6 @@
-pub mod vm;
+mod vm_state;
+mod prog_state;
+mod bfvm;
 
 fn main() {
     println!("Hello, world!");
@@ -6,11 +8,11 @@ fn main() {
 
 
 mod test {
-    use vm;
+    use bfvm;
     #[test]
     fn output_2_program() {
         let prog_string = "++.";
-        let vm_output = vm::BF::run_with_input(prog_string);
+        let vm_output = bfvm::VM::run_with_input(prog_string);
         assert!(true);
     }
     #[test]
