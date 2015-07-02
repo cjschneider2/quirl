@@ -16,20 +16,33 @@ impl VM {
         output
     }
     fn tokenize_input (input: &str) -> Option<String> {
-        Some("string".to_string())
+        let mut tmp_str = String::new();
+        for chr in input.chars() {
+            match chr {
+                '+' => tmp_str.push(chr),
+                '-' => tmp_str.push(chr),
+                '>' => tmp_str.push(chr),
+                '<' => tmp_str.push(chr),
+                '[' => tmp_str.push(chr),
+                ']' => tmp_str.push(chr),
+                '.' => tmp_str.push(chr),
+                ',' => tmp_str.push(chr),
+                _ => (),
+            }
+        }
+        Some(tmp_str)
     }
 }
 
-/*
 mod test {
-    use ::VM::tokenize_input;
+    use super::VM;
     #[test]
     fn tok_valid_symbol_test () {
         let in_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-]
             "A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
         let out_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-][>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
-        let res = VM::tokenize_input(in_str);
-        assert_eq!(res,out_str);
+        let o_res = out_str.to_string();
+        let res = VM::tokenize_input(in_str).unwrap();
+        assert_eq!(res, o_res);
     }
 }
-*/
