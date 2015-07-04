@@ -6,7 +6,6 @@ fn main() {
     println!("Hello, world!");
 }
 
-
 mod test {
     use bfvm;
     #[test]
