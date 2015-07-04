@@ -36,21 +36,23 @@ impl VMState {
     }
     /// '>' : Moves the data pointer to the next cell (cell on the right).
     fn inc_ptr (&mut self) {
-        self.p += 1;
+        if ( self.p < (30_000-1) ) { self.p += 1; }
+        else { panic!("stack overflow"); }
     }
     /// '<' : Moves the data pointer to the previous cell (cell on the left).
     fn dec_ptr (&mut self) {
-        self.p -= 1;
+        if ( self.p > 0 ) { self.p -= 1; }
+        else { panic!("stack underflow"); }
     }
-    /// '.' : Returns the ASCII value at the current cell (i.e. 65 = 'A').
-    fn std_out (&mut self) -> u8 {
+    /// '.' : Stores (returns) the ASCII value as a u8 at the current cell
+    ///       to an external source (i.e. 65 = 'A').
+    fn store (&mut self) -> u8 {
         return (self.stack[self.p]);
     }
-    /// ',' : Reads a single input character into the current cell.
-    fn std_in (&mut self, input:u8) {
+    /// ',' : Loads (reads) a single input character into the current cell.
+    fn load (&mut self, input:u8) {
         self.stack[self.p] = input;
     }
-
     // '[' and ']' are purely program state constructs.
     /*
     /// [ : If the value at the current cell is zero, skips to the
@@ -67,41 +69,42 @@ impl VMState {
     */
 }
 
+#[cfg(test)]
 mod test {
     use super::*;
     #[test]
     fn vm_test_in_out () {
         let mut vm = VMState::new();
         let in_val:u8 = 123;
-        vm.std_in(in_val);
-        let out_val = vm.std_out();
+        vm.load(in_val);
+        let out_val = vm.store();
         assert_eq!(in_val, out_val);
     }
     #[test]
     fn vm_test_inc_val () {
         let mut vm = VMState::new();
         vm.inc_val();
-        assert_eq!(vm.std_out(), 1);
+        assert_eq!(vm.store(), 1);
     }
     #[test]
     fn vm_test_dec_val () {
         let mut vm = VMState::new();
         vm.stack[vm.p] = 2;
         vm.dec_val();
-        assert_eq!(vm.std_out(), 1);
+        assert_eq!(vm.store(), 1);
     }
     #[test]
     fn vm_test_underflow_val () {
         let mut vm = VMState::new();
         vm.dec_val();
-        assert_eq!(vm.std_out(), 255);
+        assert_eq!(vm.store(), 255);
     }
     #[test]
     fn vm_test_overflow_val () {
         let mut vm = VMState::new();
         vm.stack[vm.p] = 255;
         vm.inc_val();
-        assert_eq!(vm.std_out(), 0);
+        assert_eq!(vm.store(), 0);
     }
     #[test]
     fn vm_test_inc_ptr () {
@@ -111,11 +114,11 @@ mod test {
         vm.stack[2] = 2;
         vm.stack[3] = 3;
         vm.inc_ptr();
-        assert_eq!(vm.std_out(), 1);
+        assert_eq!(vm.store(), 1);
         vm.inc_ptr();
-        assert_eq!(vm.std_out(), 2);
+        assert_eq!(vm.store(), 2);
         vm.inc_ptr();
-        assert_eq!(vm.std_out(), 3);
+        assert_eq!(vm.store(), 3);
     }
     #[test]
     fn vm_test_dec_ptr () {
@@ -126,10 +129,23 @@ mod test {
         vm.stack[3] = 3;
         vm.p = 3;
         vm.dec_ptr();
-        assert_eq!(vm.std_out(), 2);
+        assert_eq!(vm.store(), 2);
         vm.dec_ptr();
-        assert_eq!(vm.std_out(), 1);
+        assert_eq!(vm.store(), 1);
         vm.dec_ptr();
-        assert_eq!(vm.std_out(), 0);
+        assert_eq!(vm.store(), 0);
+    }
+    #[test]
+    #[should_panic(expected = "stack overflow")]
+    fn vm_test_stack_overflow () {
+        let mut vm = VMState::new();
+        vm.p = 29999;
+        vm.inc_ptr();
+    }
+    #[test]
+    #[should_panic(expected = "stack underflow")]
+    fn vm_test_stack_underflow () {
+        let mut vm = VMState::new();
+        vm.dec_ptr();
     }
 }
