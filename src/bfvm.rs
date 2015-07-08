@@ -9,8 +9,8 @@ pub struct VM {
     jmps : HashMap<i16, i16>,
 }
 impl VM {
-    /// parses the imput string, only keeping valid characters. Also generates the
-    /// jump table used for the '[' and ']' characters.
+    /// parses the imput string, only keeping valid characters.
+    /// Also generates the jump table used for the '[' and ']' characters.
     fn parse(input: &str) -> Option<(String,HashMap<i16,i16>)> {
         let mut out_str = String::new();
         let mut jump_tbl: HashMap<i16,i16> = HashMap::new();
@@ -39,8 +39,9 @@ impl VM {
         }
         Some((out_str,jump_tbl))
     }
-    /// runs the VM with the specified input string. Returns and output object containing
-    /// the final runtime status of the program as well as any collected output.
+    /// runs the VM with the specified input string.
+    /// Returns and output object containing the final runtime status of
+    /// the program as well as any collected output.
     pub fn run_with_input (input: &str) -> ProgOutput {
         let (prg_str, jmp_tbl) = VM::parse(input).unwrap();
         let mut bf_prog = VM {
@@ -61,10 +62,10 @@ impl VM {
         while(running){
             // Execute the current instruction
             match self.prg.get_next() {
-                '+' => (),
-                '-' => (),
-                '>' => (),
-                '<' => (),
+                '+' => self.vms.inc_val(),
+                '-' => self.vms.dec_val(),
+                '>' => self.vms.inc_ptr(),
+                '<' => self.vms.dec_ptr(),
                 '.' => (),
                 ',' => (),
                 '[' => {
