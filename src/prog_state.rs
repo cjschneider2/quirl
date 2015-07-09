@@ -12,7 +12,7 @@ pub struct ProgState {
     len: usize,
 }
 impl ProgState {
-    pub fn new (input: String) -> ProgState {
+    pub fn new (input: Vec<u8>) -> ProgState {
         let mut ret_val = ProgState {
             program : input,
             pp : 0,
@@ -25,7 +25,7 @@ impl ProgState {
         self.len = self.program.len();
     }
 
-    fn inc_pp(&mut self) {
+    pub fn inc_pp(&mut self) {
         self.pp += 1;
     }
 
@@ -33,12 +33,20 @@ impl ProgState {
         self.pp
     }
 
+    pub fn set_pp(&mut self, ptr: u16) {
+        self.pp = ptr as usize;
+    }
+
     pub fn get_len(&self) -> usize {
         self.len
     }
 
-    pub fn get_next_char(&self) -> Option<&u8> {
-        self.inc_pp;
-        self.program.get(self.pp)
+    pub fn get_val(&mut self) -> Option<u8> {
+        let val = self.program.get(self.pp);
+        if val.is_some() {
+            Some(*val.unwrap())
+        } else {
+            None
+        }
     }
 }

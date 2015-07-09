@@ -27,30 +27,30 @@ impl VMState {
         }
     }
     /// '+' : Increments the value at the current cell by one.
-    fn inc_val (&mut self) {
+    pub fn inc_val (&mut self) {
         self.stack[self.p] = self.stack[self.p].wrapping_add(1);
     }
     /// '-' : Decrements the value at the current cell by one.
-    fn dec_val (&mut self) {
+    pub fn dec_val (&mut self) {
         self.stack[self.p] = self.stack[self.p].wrapping_sub(1);
     }
     /// '>' : Moves the data pointer to the next cell (cell on the right).
-    fn inc_ptr (&mut self) {
+    pub fn inc_ptr (&mut self) {
         if ( self.p < (30_000-1) ) { self.p += 1; }
         else { panic!("stack overflow"); }
     }
     /// '<' : Moves the data pointer to the previous cell (cell on the left).
-    fn dec_ptr (&mut self) {
+    pub fn dec_ptr (&mut self) {
         if ( self.p > 0 ) { self.p -= 1; }
         else { panic!("stack underflow"); }
     }
     /// '.' : Stores (returns) the ASCII value as a u8 at the current cell
     ///       to an external source (i.e. 65 = 'A').
-    fn store (&mut self) -> u8 {
-        return (self.stack[self.p]);
+    pub fn store (&mut self) -> u8 {
+        self.stack[self.p]
     }
     /// ',' : Loads (reads) a single input character into the current cell.
-    fn load (&mut self, input:u8) {
+    pub fn load (&mut self, input:u8) {
         self.stack[self.p] = input;
     }
     // '[' and ']' are purely program state constructs.
