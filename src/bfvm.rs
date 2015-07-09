@@ -59,40 +59,50 @@ impl VM {
             std_out: std_out,
         };
         let mut running = true;
-        let mut jump_back = 0u16;
         while(running){
-            // Stop if we can't get the next char of the program.
-            // This probably means we're at the end.
-            let next_char = self.prg.get_val();
-            // We'll increment our program pointer regardless
-            self.prg.inc_pp();
+            // Get the program instruction
+            let prog_inst = self.prg.get_val();
             // And see if there is an instruction to execute
-            if next_char.is_some() {
+            if prog_inst.is_some() {
                 // Execute the current instruction
-                match next_char.unwrap() as char {
+                match prog_inst.unwrap() as char {
                     '+' => self.vms.inc_val(),
                     '-' => self.vms.dec_val(),
                     '>' => self.vms.inc_ptr(),
                     '<' => self.vms.dec_ptr(),
                     ',' => self.vms.load(0),
                     '.' => output.std_out.push(self.vms.store()),
-                    '[' => { // Jumps to matching bracket if val at ptr is 0
+                    '[' => {
+                            // Set the return pointer for the jump
+                            // Jumps to matching bracket if val at ptr is 0
                             if self.vms.store() == 0 {
-                                println!("jump [");
+                                // Find the jump point in the program pointer
+                                let jump_back = self.prg.get_pp() as u16;
+                                let jmp = self.jmps.get(&jump_back).unwrap();
+                                // Jump to the given pointer location
+                                self.prg.set_pp(*jmp);
                             }
-                            ()
                            },
-                    ']' => { // Jumps to matching bracket if val at ptr is non-0
+                    ']' => {
+                            // Jumps to matching bracket if val at ptr is non-0
                             if self.vms.store() != 0 {
-                                println!("jump ]");
+                                // Find the correct return pointer
+                                let mut ret_ptr = 0;
+                                let pp = self.prg.get_pp();
+                                for (key, val) in self.jmps.iter() {
+                                    if *val == pp as u16 { ret_ptr = *key; break; }
+                                }
+                                // Set the program pointer back to the orig. val
+                                self.prg.set_pp(ret_ptr);
                             }
-                            ()
                            },
                     _ => (),
                 }
             } else {
                 running = false;
             }
+            // We'll increment our program pointer regardless
+            self.prg.inc_pp();
         }
         output
     }
