@@ -53,13 +53,13 @@ impl VM {
         output
     }
     fn run (&mut self) -> ProgOutput {
-        let mut std_out : Vec<u8> = Vec::new();
+        let std_out : Vec<u8> = Vec::new();
         let mut output = ProgOutput {
             status: None,
             std_out: std_out,
         };
         let mut running = true;
-        while(running){
+        while running {
             // Get the program instruction
             let prog_inst = self.prg.get_val();
             // And see if there is an instruction to execute
@@ -111,23 +111,26 @@ impl VM {
 #[cfg(test)]
 mod test {
     use super::VM;
+    use prog_state::ProgOutput;
     #[test]
     fn test_parse_invalid_symbols() {
         let in_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-]
             "A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
         let out_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-][>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
         let o_res : Vec<u8> = Vec::from(out_str);
-        let (res,jmp_tbl) = VM::parse(in_str).unwrap();
+        let (res,_jmp_tbl) = VM::parse(in_str).unwrap();
         assert_eq!(res, o_res);
     }
     #[test]
     fn test_run_with_input() {
+        // Setup
         let in_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-]
             "A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
-        let out_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-][>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
-        let o_res : Vec<u8> = Vec::from(out_str);
+        let expected_output = ProgOutput { status: None, std_out: vec!(72,10) };
+        // run
         let output = VM::run_with_input(in_str);
+        // eval
         println!("{:?}", output);
-        assert!(false);
+        assert_eq!(output.std_out, expected_output.std_out);
     }
 }

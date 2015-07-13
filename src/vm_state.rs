@@ -36,12 +36,12 @@ impl VMState {
     }
     /// '>' : Moves the data pointer to the next cell (cell on the right).
     pub fn inc_ptr (&mut self) {
-        if ( self.p < (30_000-1) ) { self.p += 1; }
+        if self.p < (30_000-1) { self.p += 1; }
         else { panic!("stack overflow"); }
     }
     /// '<' : Moves the data pointer to the previous cell (cell on the left).
     pub fn dec_ptr (&mut self) {
-        if ( self.p > 0 ) { self.p -= 1; }
+        if self.p > 0 { self.p -= 1; }
         else { panic!("stack underflow"); }
     }
     /// '.' : Stores (returns) the ASCII value as a u8 at the current cell

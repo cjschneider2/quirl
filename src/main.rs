@@ -2,21 +2,41 @@ mod vm_state;
 mod prog_state;
 mod bfvm;
 
+#[cfg(not(test))]
 fn main() {
-    println!("Hello, world!");
+    let prog_str = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
+    let res = bfvm::VM::run_with_input(prog_str);
+    // Convert the output list to a UTF8 (ANSCII) String slice
+    let out_str = std::str::from_utf8(&res.std_out);
+    match out_str {
+        Ok(string) => println!("{}", string),
+        Err(error) => println!("{}", error),
+    }
 }
 
+
+#[cfg(test)]
 mod test {
     use bfvm;
+    use prog_state::ProgOutput;
+    use std;
     #[test]
     fn output_2_program() {
         let prog_string = "++.";
+        let expected_output = ProgOutput { status: None, std_out: vec!(2) };
         let vm_output = bfvm::VM::run_with_input(prog_string);
-        assert!(true);
+        assert_eq!(vm_output.std_out, expected_output.std_out);
     }
     #[test]
     fn hello_world() {
         let prog_str = "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.";
+        let res = bfvm::VM::run_with_input(prog_str);
+        let out_str = std::str::from_utf8(&res.std_out);
+        let res = match out_str {
+            Ok(string) => string,
+            Err(error) => {println!("{}", error); ""},
+        };
+        assert_eq!(res, "Hello World!\n");
     }
 
 

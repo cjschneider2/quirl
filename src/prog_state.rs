@@ -1,5 +1,3 @@
-use vm_state::VMState;
-
 /// Stores the string representation of the current program as a string slice.
 #[derive(Debug)]
 pub struct ProgOutput {
@@ -37,6 +35,7 @@ impl ProgState {
         self.pp = ptr as usize;
     }
 
+    #[allow(dead_code)]
     pub fn get_len(&self) -> usize {
         self.len
     }
