@@ -11,11 +11,12 @@ pub struct VM {
 impl VM {
     /// parses the imput string, only keeping valid characters.
     /// Also generates the jump table used for the '[' and ']' characters.
-    fn parse(input: &str) -> Option<(Vec<u8>,HashMap<u16,u16>)> {
+    fn parse(input: &str) -> Result<(Vec<u8>,HashMap<u16,u16>), &'static str> {
         let mut out_str : Vec<u8> = Vec::new();
         let mut jump_tbl: HashMap<u16,u16> = HashMap::new();
-        let mut jmps = Vec::new(); // used to store the intermediate locations
-                                   // for the jumps.
+        // "jmps" is used to store the intermediate idx locations used for the jumps.
+        let mut jmps = Vec::new();
+        let mut match_err = false;
         for chr in input.chars() {
             match chr {
                 '+' => out_str.push(chr as u8),
@@ -30,28 +31,47 @@ impl VM {
                        },
                 ']' => {
                         out_str.push(chr as u8);
-                        //TODO: Error recovery
-                        let jmp = jmps.pop().unwrap() as u16;
-                        jump_tbl.insert(jmp, (out_str.len()-1) as u16 );
+                        match jmps.pop() {
+                            Some(jmp) => {
+                                jump_tbl.insert(jmp as u16, (out_str.len()-1) as u16);
+                            },
+                            None => { match_err = true; },
+                        };
                        },
                 _ => (),
             }
         }
-        Some((out_str,jump_tbl))
+        if match_err {
+            Err("Unmatched ]")
+        } else if jmps.len() > 0 {
+            Err("Unmatched [")
+        } else {
+            Ok((out_str,jump_tbl))
+        }
     }
     /// runs the VM with the specified input string.
     /// Returns and output object containing the final runtime status of
     /// the program as well as any collected output.
     pub fn run_with_input (input: &str) -> ProgOutput {
-        let (prg_str, jmp_tbl) = VM::parse(input).unwrap();
-        let mut bf_prog = VM {
-            vms: VMState::new(),
-            prg: ProgState::new( Vec::<u8>::from(&*prg_str) ),
-            jmps: jmp_tbl,
-        };
-        let output = bf_prog.run();
-        output
+        match VM::parse(input) {
+            Ok((prg_str, jump_tbl)) => {
+                let mut bf_prog = VM {
+                    vms: VMState::new(),
+                    prg: ProgState::new( Vec::<u8>::from(&*prg_str) ),
+                    jmps: jump_tbl,
+                };
+                let output = bf_prog.run();
+                output
+            },
+            Err(e_str) => {
+                ProgOutput {
+                    status: Some(String::from(e_str)),
+                    std_out: Vec::<u8>::new(),
+                }
+            }
+        }
     }
+
     fn run (&mut self) -> ProgOutput {
         let std_out : Vec<u8> = Vec::new();
         let mut output = ProgOutput {
@@ -123,13 +143,10 @@ mod test {
     }
     #[test]
     fn test_run_with_input() {
-        // Setup
         let in_str = r#"[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-]
             "A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
         let expected_output = ProgOutput { status: None, std_out: vec!(72,10) };
-        // run
         let output = VM::run_with_input(in_str);
-        // eval
         println!("{:?}", output);
         assert_eq!(output.std_out, expected_output.std_out);
     }

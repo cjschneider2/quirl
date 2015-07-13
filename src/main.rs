@@ -43,8 +43,9 @@ mod test {
     // The following tests are obtained from :
     //    Daniel B Cristofani (cristofdathevanetdotcom)
     //    http://www.hevanet.com/cristofd/brainfuck/
-
     //    Here are some little programs for testing brainfuck implementations.
+
+
     /*
     >,>+++++++++,>+++++++++++[<++++++<++++++<+>>>-]<<.>.<<-.>.>.<<.
     This is for testing i/o; give it a return followed by an EOF. (Try it both
@@ -63,7 +64,17 @@ mod test {
     LA means newline input is working fine, and EOF translates as -1.
     Anything else is fairly unexpected.
     */
-
+    #[test]
+    fn test_new_line() {
+        let prog_str = ">,>+++++++++,>+++++++++++[<++++++<++++++<+>>>-]<<.>.<<-.>.>.<<.";
+        let res = bfvm::VM::run_with_input(prog_str);
+        let out_str = std::str::from_utf8(&res.std_out);
+        let res = match out_str {
+            Ok(string) => {println!("{}", string); string},
+            Err(error) => {println!("{}", error); ""},
+        };
+        assert_eq!(res, "BB\nBB\n");
+    }
 
     /*
     ++++[>++++++<-]>[>+++++>+++++++<<-]>>++++<[[>[[>>+<<-]<]>>>-]>-[>+>+<<-]>]
@@ -71,6 +82,17 @@ mod test {
     Goes to cell 30000 and reports from there with a #. (Verifies that the
     array is big enough.)
     */
+    #[test]
+    fn test_cell_30000() {
+        let prog_str = "++++[>++++++<-]>[>+++++>+++++++<<-]>>++++<[[>[[>>+<<-]<]>>>-]>-[>+>+<<-]>]+++++[>+++++++<<++>-]>.<<.";
+        let res = bfvm::VM::run_with_input(prog_str);
+        let out_str = std::str::from_utf8(&res.std_out);
+        let res = match out_str {
+            Ok(string) => {println!("{}", string); string},
+            Err(error) => {println!("{}", error); ""},
+        };
+        assert_eq!(res, "#\n");
+    }
 
     /*
     These next two test the array bounds checking. Bounds checking is not
@@ -95,6 +117,17 @@ mod test {
     "A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>.
     Tests for several obscure problems. Should output an H.
     */
+    #[test]
+    fn test_obscure_problems() {
+        let prog_str = r#""[]++++++++++[>>+>+>++++++[<<+<+++>>>-]<<<<-]"A*$";?@![#>>+<<]>[>>]<<<<[>++<[-]]>.>."#;
+        let res = bfvm::VM::run_with_input(prog_str);
+        let out_str = std::str::from_utf8(&res.std_out);
+        let res = match out_str {
+            Ok(string) => {println!("{}", string); string},
+            Err(error) => {println!("{}", error); ""},
+        };
+        assert_eq!(res, "H\n");
+    }
 
     /*
     +++++[>+++++++>++<<-]>.>.[
@@ -105,4 +138,18 @@ mod test {
     Should ideally give error message "unmatched ]" or the like, and not give
     any output. Not essential.
     */
+    #[test]
+    fn test_unmatched_l_bracket() {
+        let prog_str = r#"+++++[>+++++++>++<<-]>.>.["#;
+        let res = bfvm::VM::run_with_input(prog_str);
+        println!("{:?}", res.status);
+        assert!(res.status.is_some());
+    }
+    #[test]
+    fn test_unmatched_r_bracket() {
+        let prog_str = r#"+++++[>+++++++>++<<-]>.>.]["#;
+        let res = bfvm::VM::run_with_input(prog_str);
+        println!("{:?}", res.status);
+        assert!(res.status.is_some());
+    }
 }
