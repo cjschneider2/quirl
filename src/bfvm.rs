@@ -1,11 +1,16 @@
+//! bfvm is the brainfuck virtual maschine.
+
 use std::collections::HashMap;
 use vm_state::VMState;
 use prog_state::{ProgState, ProgOutput};
 
-/// The Brainfuck VM
+/// VM collects all the state for a BF program.
 pub struct VM {
+    /// The virtual machine state
     vms : VMState,
+    /// The program state
     prg : ProgState,
+    /// The jump table for the '[' & ']' constructs
     jmps : HashMap<u16, u16>,
 }
 impl VM {

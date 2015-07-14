@@ -1,3 +1,6 @@
+//! vm_state: Contains the virtual maschine state and instructions.
+
+
 /// Brainfuck is represented by an array with 30,000 cells initialized to zero
 /// and a data pointer pointing at the current cell.
 ///

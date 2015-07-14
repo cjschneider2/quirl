@@ -1,3 +1,5 @@
+//! Quirl is a brainfuck interpreter / REPL
+
 mod vm_state;
 mod prog_state;
 mod bfvm;
@@ -165,9 +167,6 @@ mod test {
     /// +++++[>+++++++>++<<-]>.>.[
     /// Should ideally give error message "unmatched [" or the like, and not give
     /// any output. Not essential.
-    /// +++++[>+++++++>++<<-]>.>.][
-    /// Should ideally give error message "unmatched ]" or the like, and not give
-    /// any output. Not essential.
     #[test]
     fn test_unmatched_l_bracket() {
         let prog_str = r#"+++++[>+++++++>++<<-]>.>.["#;
@@ -175,6 +174,10 @@ mod test {
         println!("{:?}", res.status);
         assert!(res.status.is_some());
     }
+
+    /// +++++[>+++++++>++<<-]>.>.][
+    /// Should ideally give error message "unmatched ]" or the like, and not give
+    /// any output. Not essential.
     #[test]
     fn test_unmatched_r_bracket() {
         let prog_str = r#"+++++[>+++++++>++<<-]>.>.]["#;

@@ -1,4 +1,5 @@
-/// Stores the string representation of the current program as a string slice.
+//! prog_state: stores the program test/bytecode and current state.
+
 #[derive(Debug)]
 pub struct ProgOutput {
     pub status : Option<String>,
