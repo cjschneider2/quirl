@@ -48,7 +48,7 @@ fn main() {
                 Err(error) => println!("{}", error),
             }
         } else {
-            println!("Unhelpful rrror message about bad input.")
+            println!("Unhelpful error message about bad input.")
         }
         // Loop
     }
