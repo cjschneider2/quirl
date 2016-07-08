@@ -9,8 +9,8 @@ resulting output is displayed.
 As some BF programs are implementation dependent, Some details of this one are given here.
 
 * The VM implements a 30 000 cell machine. 
-* Each cell is limited to u8 size, such that any valid ASCII caracter may be represented.
-* Wrapping of the cell pointer is not allowed, and considered an error.
+* Each cell is limited to u8 size, such that any valid ASCII character may be represented.
+* Wrapping of the cell pointer is not allowed, and is considered an error.
 * Wrapping of cell values are allowed.
 
 ### Contributing
