@@ -4,9 +4,6 @@ mod vm_state;
 mod prog_state;
 mod bfvm;
 
-use std::io;
-use std::io::{Write};
-
 #[cfg(not(test))]
 fn main() {
     // The welcome text in beautiful bf bytecode :P
